@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 
-public class Manager implements TopManager{
+public class Manager implements TopManager {
 
     HashMap<Integer, Task> tasks = new HashMap<>();//задачи
     HashMap<Integer, Epic> epics = new HashMap<>();//эпики
@@ -16,7 +16,7 @@ public class Manager implements TopManager{
     Integer id = 0;
 
     public void addTask(Task task) {//добавить задачу
-        task.setNumber(id);
+        task.setNumber(id++);
         tasks.put(task.getNumber(), task);
     }
 
@@ -28,8 +28,13 @@ public class Manager implements TopManager{
         Task task = tasks.remove(id);
     }
 
-    public void getIdTask(int id) {//получить задачу по id|| СДЕЛАТЬ ПРОВЕРКУ НА НОЛЬ!!!!!!!!!!!!!1
+    public Object getIdTask(int id) {//получить задачу по id|| СДЕЛАТЬ ПРОВЕРКУ НА НОЛЬ!!!!!!!!!!!!!1
         Task task = tasks.get(id);
+        if(task != null){
+            return task;
+        }else{
+            return null;
+        }
     }
 
     public void updateIdTask(Task task) {//обновление задачи
@@ -46,6 +51,7 @@ public class Manager implements TopManager{
 
     public void addEpic(Epic epic) {//добавили эпик
         epic.setNumber(id++);
+        epic.setStatus("NEW");
         epics.put(epic.getNumber(), epic);
     }
 
@@ -61,20 +67,23 @@ public class Manager implements TopManager{
         epics.remove(id);
     }
 
-    public void getEpic(int id) {//получить эпик по id
+    public Epic getEpic(int id) {//получить эпик по id
         if (!epics.containsKey(id)) {
-            return;
+            return null;
         }
-        epics.get(id);
+        return epics.get(id);
     }
 
     public void updateEpic(Epic epic) {//обновление эпика
-        Epic lastepic = epics.get(epic.getNumber());
-        if (lastepic == null) {
-            return;
-        }
-        lastepic.setName(epic.getName());
-        lastepic.setDescription(epic.getDescription());
+        epics.put(epic.getNumber(),epic);
+
+        //        Epic lastEpic = epics.get(epic.getNumber());
+//        if (lastEpic == null) {
+//            return;
+//        }
+//        lastEpic.setName(epic.getName());
+//        lastEpic.setDescription(epic.getDescription());
+        updateStatusEpic(epic.getNumber());
     }
 
     public ArrayList<Epic> getAllEpics() {//получить все эпики
@@ -84,12 +93,14 @@ public class Manager implements TopManager{
     public ArrayList<Subtask> getSubtasks(int epicId) {//получение подзадач определенного эпика
         return epics.get(epicId).getSubtasks();
     }
+
+
     //---------------------------------------подзадачи------------------------------------------------------------------
 
     public void addSubtask(Subtask subtask) {//добавить
-        subtask.setNumber(id);
+        subtask.setNumber(id++);
+        subtask.setStatus("NEW");
         subtasks.put(subtask.getNumber(), subtask);
-        updateStatusEpic(subtask.getEpicId());
     }
 
     public void removeAllSubtasks() {//удалить все
@@ -115,8 +126,9 @@ public class Manager implements TopManager{
         if (!subtasks.containsKey(subtask.getNumber())) {
             return;
         }
+        subtasks.remove(subtask.getNumber());
         subtasks.put(subtask.getNumber(), subtask);
-        updateStatusEpic(subtask.getEpicId());
+
     }
 
     public ArrayList<Subtask> getAllSubtasks() {//получить все
@@ -124,6 +136,8 @@ public class Manager implements TopManager{
     }
 
     private void updateStatusEpic(int epicId) {
+
         epics.get(epicId).updateStatus();
     }
+
 }

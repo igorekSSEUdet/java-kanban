@@ -14,7 +14,7 @@ public interface TopManager {
 
     void removeIdTask(int id);
 
-    void getIdTask(int id);
+    Object getIdTask(int id);
 
     void updateIdTask(Task task);
 
@@ -26,7 +26,7 @@ public interface TopManager {
 
     void removeIdEpic(int id);
 
-    void getEpic(int id);
+    Object getEpic(int id);
 
     void updateEpic(Epic epic);
 

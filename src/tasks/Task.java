@@ -6,18 +6,29 @@ public class Task {
     private String status;//статус
     private int number;//индивидуальный номер
 
+    public Task(String name, String description, String status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(String name, String description, int number) {
+        this.name = name;
+        this.description = description;
+        this.number = number;
+    }
+
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+
+    }
+
     public Task(String name, String description, String status, int number) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.number = number;
-    }
-
-    public Task(String name, String description, String status) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.number = 0;
     }
 
     public String getName() {
@@ -56,5 +67,15 @@ public class Task {
         String NEW = "NEW";
         String IN_PROGRESS = "IN_PROGRESS";
         final String DONE = "DONE";
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", number=" + number +
+                '}';
     }
 }
