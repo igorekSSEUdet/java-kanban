@@ -1,10 +1,10 @@
 package tasks;
 
 public class Task {
-    private String name;//навзвание
-    private String description;//описание
-    private String status;//статус
-    private int id;//индивидуальный номер
+    private String name;
+    private String description;
+    private String status;
+    private int id;
 
 
     public Task(String name, String description) {

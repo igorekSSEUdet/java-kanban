@@ -36,39 +36,5 @@ public class Epic extends Task {
         return this.subtaskIds.get(id);
     }
 
-    private void updateStatus() {
-        Integer progress = 0;
-        Integer done = 0;
-        Integer NEW = 0;
-        Manager manager = new Manager();
-
-        if (subtaskIds.isEmpty()) {
-            setStatus("NEW");
-        } else {
-            for (Integer subtaskId : subtaskIds) {
-                Subtask subtask = manager.getSubtask(subtaskId);
-                if ("NEW".equals(subtask.getStatus())) {
-                    NEW++;
-                } else if ("IN_PROGRESS".equals(subtask.getStatus())) {
-                    progress++;
-                } else if ("DONE".equals(subtask.getStatus())) {
-                    done++;
-                }
-
-            }
-        }
-
-        if (progress > 0) {
-            setStatus("IN_PROGRESS");
-        } else if (done > 0 && progress == 0) {
-            setStatus("DONE");
-        } else if (done == 0 && progress == 0 && NEW > 0) {
-            setStatus("NEW");
-        }
-    }
-
-    public void getUpdateStatus() {
-        updateStatus();
-    }
 
 }
