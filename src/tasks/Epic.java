@@ -1,14 +1,12 @@
 package tasks;
 
-import manager.Manager;
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtaskIds = new ArrayList<>();
 
 
-    public Epic(String name, String description) {// for create
+    public Epic(String name, String description) {
         super(name, description);
     }
 
@@ -36,5 +34,14 @@ public class Epic extends Task {
         return this.subtaskIds.get(id);
     }
 
-
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "subtaskIds=" + subtaskIds +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", id=" + id +
+                '}';
+    }
 }
