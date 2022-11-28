@@ -52,7 +52,5 @@ public interface TaskManager {
 
     public List<Task> getHistory();
 
-    public void updateStatus(int EpicId);
 
-    public Subtask getSubtaskForStatus(int id);
 }

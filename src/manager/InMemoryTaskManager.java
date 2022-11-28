@@ -4,7 +4,6 @@ import historyManager.HistoryManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    Integer id = 0;
+    private Integer id = 0;
 
 
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
@@ -199,8 +198,8 @@ public class InMemoryTaskManager implements TaskManager {
         return inMemoryHistoryManager.getHistory();
     }
 
-    @Override
-    public Subtask getSubtaskForStatus(int id) {
+
+    private Subtask getSubtaskForStatus(int id) {
         if (!subtasks.containsKey(id)) {
             return null;
         } else {
@@ -208,8 +207,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public void updateStatus(int EpicId) {
+
+    private void updateStatus(int EpicId) {
 
 
         Integer progress = 0;
