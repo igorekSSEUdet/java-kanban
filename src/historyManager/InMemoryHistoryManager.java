@@ -2,40 +2,44 @@ package historyManager;
 
 import tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class InMemoryHistoryManager<T> implements HistoryManager {
-    private HashMap<Integer, Node> map = new HashMap<>();
-    ArrayList<Task> history = new ArrayList<>();
+    private Node<T> first;
+    private Node<T> last;
+    private Map<Integer, Node> nodeMap = new HashMap<>();
+    private List<Integer> orderOfGets = new ArrayList<>();
 
     @Override
     public void add(Task task) {
-        if (map.containsKey(task.getId())) {
-            removeNode(map.get(task.getId()));
+        if (nodeMap.containsKey(task.getId())) {
+            removeNode(task.getId());
         }
-        map.put(task.getId(), addLast((T) task));
+        nodeMap.put(task.getId(), addLast((T) task));
 
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
+        List<Task> history = new ArrayList<>();
+        for (Integer task : orderOfGets) {
+            history.add((Task) nodeMap.get(task).item);
+        }
         return history;
     }
 
     @Override
     public void remove(int id) {
-        if (map.containsKey(id)) {
-            removeNode(map.get(id));
-            map.remove(id);
+        if (nodeMap.containsKey(id)) {
+            removeNode(id);
+            nodeMap.remove(id);
+            orderOfGets.remove((Object) id);
         }
     }
 
-    private Node<T> first;
-    transient Node<T> last;
 
-    Node<T> addLast(T element) {
-        history.add((Task) element);
+    private Node<T> addLast(T element) {
+        orderOfGets.add(((Task) element).getId());
         final Node<T> l = last;
         final Node<T> newNode = new Node<>(l, element, null);
         last = newNode;
@@ -47,28 +51,19 @@ public class InMemoryHistoryManager<T> implements HistoryManager {
         return newNode;
     }
 
-    public boolean removeNode(Node o) {
-        history.remove((Task) o.item);
-        if (o == null) {
-            for (Node<T> x = first; x != null; x = x.next) {
-                if (x.item == null) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        } else {
-            for (Node<T> x = first; x != null; x = x.next) {
-                if (o.equals(x.item)) {
-                    unlink(x);
-                    return true;
-                }
-            }
+    private boolean removeNode(int id) {
+
+        orderOfGets.remove((Object) id);
+        if (nodeMap.containsKey(id)) {
+            unlink(nodeMap.get(id));
+            return true;
         }
         return false;
+
     }
 
 
-    T unlink(Node<T> x) {
+    private T unlink(Node<T> x) {
         // assert x != null;
         final T element = x.item;
         final Node<T> next = x.next;
@@ -94,7 +89,7 @@ public class InMemoryHistoryManager<T> implements HistoryManager {
     }
 
 
-    public static class Node<T> {
+    private static class Node<T> {
         T item;
         Node<T> next;
         Node<T> prev;
