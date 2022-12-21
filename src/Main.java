@@ -46,6 +46,8 @@ public class Main {
         taskManager.getTaskById(task3.getId());
         taskManager.getTaskById(task2.getId());
         taskManager.getTaskById(task1.getId());
+//        taskManager.getTaskById(task2.getId());
+//        taskManager.getTaskById(task1.getId());
         System.out.println("history after sorting: " + taskManager.getHistory());
         System.out.println("size of history: " + taskManager.getHistory().size());
         taskManager.removeTaskById(task4.getId());
@@ -63,6 +65,7 @@ public class Main {
         taskManager.getSubtaskById(subtask3.getId());
 
         System.out.println(taskManager.getHistory());
+        System.out.println("size of history: " + taskManager.getHistory().size());
         taskManager.removeSubtaskById(subtask1.getId());
         System.out.println("after remove one Subtask: " + taskManager.getHistory());
         System.out.println("size of history: " + taskManager.getHistory().size());
