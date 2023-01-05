@@ -1,4 +1,4 @@
-package tasks;
+package model;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,11 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description);
+    }
+
+    public Epic(int id, String taskType, String name, String status, String description) {
+        super(id, taskType, name, status, description);
+
     }
 
     public ArrayList<Integer> getSubtaskIds() {
@@ -42,6 +47,7 @@ public class Epic extends Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", id=" + id +
+                ", taskType=" + taskType +
                 '}';
     }
 }

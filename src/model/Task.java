@@ -1,4 +1,4 @@
-package tasks;
+package model;
 
 import manager.Status;
 
@@ -9,6 +9,7 @@ public class Task {
     protected String description;
     protected Status status;
     protected int id;
+    protected TaskType taskType;
 
 
     public Task(String name, String description) {
@@ -17,11 +18,15 @@ public class Task {
 
     }
 
-    public Task(String name, String description, Status status) {
+
+    public Task(int id, String taskType, String name, String status, String description) {
+        this.id = id;
+        this.taskType = TaskType.valueOf(taskType);
         this.name = name;
+        this.status = Status.valueOf(status);
         this.description = description;
-        this.status = status;
     }
+
 
     public String getName() {
         return name;
@@ -55,6 +60,14 @@ public class Task {
         this.id = id;
     }
 
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,6 +88,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", id=" + id +
+                ", taskType=" + taskType +
                 '}';
     }
 }

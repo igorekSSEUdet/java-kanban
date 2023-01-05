@@ -1,32 +1,34 @@
 package manager;
 
 import historyManager.HistoryManager;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import model.Epic;
+import model.Subtask;
+import model.Task;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static model.TaskType.*;
+
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected Map<Integer, Task> tasks = new HashMap<>();
+    protected Map<Integer, Epic> epics = new HashMap<>();
+    protected Map<Integer, Subtask> subtasks = new HashMap<>();
     private Integer id = 0;
 
 
-    private HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+     protected HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     @Override
-    public int addTask(Task task) {
+    public void addTask(Task task) {
         task.setStatus(Status.NEW);
         task.setId(id++);
+        task.setTaskType(TASK);
         tasks.put(task.getId(), task);
-        return task.getId();
     }
 
     @Override
@@ -71,11 +73,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addEpic(Epic epic) {
+    public void addEpic(Epic epic) {
         epic.setId(id++);
         epic.setStatus(Status.NEW);
+        epic.setTaskType(EPIC);
         epics.put(epic.getId(), epic);
-        return epic.getId();
     }
 
     @Override
@@ -146,13 +148,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addSubtask(Subtask subtask) {
+    public void addSubtask(Subtask subtask) {
         subtask.setId(id++);
+        subtask.setStatus(Status.NEW);
         subtasks.put(subtask.getId(), subtask);
         Epic epic = epics.get(subtask.getEpicId());
         epic.setSubtaskIds(subtask.getId());
+        subtask.setTaskType(SUBTASK);
         updateStatus(epic.getId());
-        return subtask.getId();
     }
 
     @Override

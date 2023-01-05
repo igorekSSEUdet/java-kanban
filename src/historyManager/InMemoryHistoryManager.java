@@ -1,6 +1,6 @@
 package historyManager;
 
-import tasks.Task;
+import model.Task;
 
 import java.util.*;
 
@@ -9,7 +9,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node first;
     private Node last;
 
-    private Map<Integer, Node> nodeMap = new HashMap<>();
+     Map<Integer, Node> nodeMap = new HashMap<>();
+
 
     private List<Task> getTasks() {
         List<Task> history = new ArrayList<>();
@@ -33,7 +34,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-
         return getTasks();
     }
 
@@ -54,25 +54,24 @@ public class InMemoryHistoryManager implements HistoryManager {
         last = newNode;
         if (l == null)
             first = newNode;
-        else
+        else {
             l.next = newNode;
+        }
 
         return newNode;
     }
 
-    private boolean removeNode(int id) {
+    private void removeNode(int id) {
 
         if (nodeMap.containsKey(id)) {
 
             unlink(nodeMap.get(id));
-            return true;
         }
-        return false;
 
     }
 
 
-    private Task unlink(Node x) {
+    private void unlink(Node x) {
         // assert x != null;
         final Task element = x.item;
         final Node next = x.next;
@@ -94,7 +93,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         x.item = null;
-        return element;
     }
 
 
