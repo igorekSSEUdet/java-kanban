@@ -154,17 +154,17 @@ class FileBackedTasksManager extends InMemoryTaskManager {
 
     String toString(Task task) {
         if (task.getTaskType().equals(TASK)) {
-            return String.format("%d%s%s%s%s%s%s%s%s", task.getId(), ",", task.getTaskType(), ","
-                    , task.getName(), ",", task.getStatus(), ",", task.getDescription());
+            return String.format("%d,%s,%s,%s,%s", task.getId(), task.getTaskType(),
+                    task.getName(), task.getStatus(), task.getDescription());
 
         } else if (task.getTaskType().equals(SUBTASK)) {
             Subtask subtask = (Subtask) task;
-            return String.format("%d%s%s%s%s%s%s%s%s%s%d", subtask.getId(), ",", subtask.getTaskType(), ",",
-                    subtask.getName(), ",", subtask.getStatus(), ",", subtask.getDescription(), ",", subtask.getEpicId());
+            return String.format("%d,%s,%s,%s,%s,%d", subtask.getId(), subtask.getTaskType(),
+                    subtask.getName(), subtask.getStatus(), subtask.getDescription(), subtask.getEpicId());
         } else {
             Epic epic = (Epic) task;
-            return String.format("%d%s%s%s%s%s%s%s%s", epic.getId(), ",", epic.getTaskType(), ",", epic.getName(), ",", epic.getStatus(), ",",
-                    epic.getDescription());
+            return String.format("%d,%s,%s,%s,%s", epic.getId(), epic.getTaskType(), epic.getName(),
+                    epic.getStatus(), epic.getDescription());
         }
     }
 
