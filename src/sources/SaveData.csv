@@ -1,8 +1,7 @@
 id,type,name,status,description,epic
-2,TASK,name,NEW,desc
 3,TASK,name,NEW,desc
 4,TASK,name,NEW,desc
 1,SUBTASK,name,NEW,desc,0
 0,EPIC,name,NEW,desc
 
-2,3,4,0
+3,4,0
