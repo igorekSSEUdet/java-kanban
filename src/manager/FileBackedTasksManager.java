@@ -48,6 +48,13 @@ class FileBackedTasksManager extends InMemoryTaskManager {
         manager.removeAllTasks();
         System.out.println(manager.epics);
         System.out.println(manager1.epics);
+        System.out.println(manager.getHistory());
+        System.out.println();
+        System.out.println(manager.getHistory());
+
+        Task task0 = new Task("name1", "desc");
+        manager1.addTask(task0);
+        System.out.println();
 
     }
 
@@ -253,6 +260,7 @@ class FileBackedTasksManager extends InMemoryTaskManager {
     static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         try {
+            int maxId = 0;
             FileReader reader = new FileReader(file);
             BufferedReader br = new BufferedReader(reader);
             br.readLine();
@@ -260,6 +268,7 @@ class FileBackedTasksManager extends InMemoryTaskManager {
                 String line = br.readLine();
                 if (!line.isEmpty()) {
                     Task task = fileBackedTasksManager.taskFromString(line);
+                    if(task.getId() > maxId) maxId = task.getId();
                     if (task.getTaskType().equals(TASK)) {
                         fileBackedTasksManager.tasks.put(task.getId(), task);
                     } else if (task.getTaskType().equals(EPIC)) {
@@ -298,6 +307,7 @@ class FileBackedTasksManager extends InMemoryTaskManager {
             }
             br.close();
             reader.close();
+            fileBackedTasksManager.id = maxId;
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки данных");
         }
