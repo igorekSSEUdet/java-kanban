@@ -2,13 +2,11 @@ package manager;
 
 import historyManager.HistoryManager;
 import model.Epic;
+import model.Status;
 import model.Subtask;
 import model.Task;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static model.TaskType.*;
 
@@ -21,14 +19,37 @@ public class InMemoryTaskManager implements TaskManager {
     protected Integer id = 0;
 
 
-     protected HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    protected HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+
+
+
+
+    private Collection<Task> getPrioritizedTasks() {
+        Set<Task> sortedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        sortedTasks.addAll(tasks.values());
+        sortedTasks.addAll(subtasks.values());
+        return sortedTasks;
+    }
+
+    private boolean checkIntersection(Task task) {
+        int check = 0;
+        for (Task priority : getPrioritizedTasks()) {
+            if (task.getStartTime().isAfter(priority.getStartTime()) && task.getEndTime().isBefore(priority.getEndTime()))
+                check++;
+        }
+        if (check != 0) return false;
+        else return true;
+    }
 
     @Override
     public void addTask(Task task) {
-        task.setStatus(Status.NEW);
-        task.setId(id++);
-        task.setTaskType(TASK);
-        tasks.put(task.getId(), task);
+        if (checkIntersection(task)) {
+            task.setStatus(Status.NEW);
+            task.setId(id++);
+            task.setTaskType(TASK);
+            tasks.put(task.getId(), task);
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
+
     }
 
     @Override
@@ -45,11 +66,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-
-        if (!tasks.containsKey(task.getId())) {
-            return;
-        }
-        tasks.put(task.getId(), task);
+        if (checkIntersection(task)) {
+            if (!tasks.containsKey(task.getId())) {
+                return;
+            }
+            tasks.put(task.getId(), task);
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
     }
 
     @Override
@@ -74,10 +96,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        epic.setId(id++);
-        epic.setStatus(Status.NEW);
-        epic.setTaskType(EPIC);
-        epics.put(epic.getId(), epic);
+        if (checkIntersection(epic)) {
+            epic.setId(id++);
+            epic.setStatus(Status.NEW);
+            epic.setTaskType(EPIC);
+            epics.put(epic.getId(), epic);
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
+
+
     }
 
     @Override
@@ -99,9 +125,12 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         Epic epic = epics.get(id);
+        List<Subtask> subtasks1 = epic.getSubtasks();
         for (int i = 0; i < epic.lengthList(); i++) {
-            subtasks.remove(epic.getIdOfSubtask(i));
-            inMemoryHistoryManager.remove(epic.getIdOfSubtask(i));
+            for (Subtask subtask : subtasks1) {
+                subtasks.remove(subtask.getId());
+                inMemoryHistoryManager.remove(subtask.getId());
+            }
         }
         epic.removeSubtasks();
         epics.remove(id);
@@ -123,10 +152,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        epics.put(epic.getId(), epic);
+        if (checkIntersection(epic)) {
+            epics.put(epic.getId(), epic);
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
     }
 
-    @Override
+
     public ArrayList<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
     }
@@ -134,27 +165,28 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
         Epic epic = epics.get(epicId);
-        ArrayList<Subtask> listOfSubtasks = new ArrayList<>();;
         if (epic == null) {
             return null;
-        } else {
-            ArrayList<Integer> subtasksIds = epic.getSubtaskIds();
-            for (Integer subtasksId : subtasksIds) {
-                listOfSubtasks.add(subtasks.get(subtasksId));
-            }
         }
+
+        ArrayList<Subtask> listOfSubtasks;
+        listOfSubtasks = epic.getSubtasks();
         return listOfSubtasks;
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
-        subtask.setId(id++);
-        subtask.setStatus(Status.NEW);
-        subtasks.put(subtask.getId(), subtask);
-        Epic epic = epics.get(subtask.getEpicId());
-        epic.setSubtaskIds(subtask.getId());
-        subtask.setTaskType(SUBTASK);
-        updateStatus(epic.getId());
+        if (checkIntersection(subtask)) {
+            subtask.setId(id++);
+            subtask.setStatus(Status.NEW);
+            subtasks.put(subtask.getId(), subtask);
+            Epic epic = epics.get(subtask.getEpicId());
+            epic.setSubtask(subtask);
+            epic.countTime(subtask);
+            epic.plusDuration(subtask.getDuration());
+            subtask.setTaskType(SUBTASK);
+            updateStatus(epic.getId());
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
     }
 
     @Override
@@ -163,11 +195,12 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask subtask : subtasks.values()) {
             inMemoryHistoryManager.remove(subtask.getId());
         }
-        for (int i = 0; i < epics.size(); i++) {
+        for (int i = 0; i < epics.size(); i++) {//check this wtf cycle
             for (Integer integer : epics.keySet()) {
                 Epic epic = epics.get(integer);
+                epic.emptyDuration();
                 epic.removeSubtasks();
-
+                epic.emptyTime();
                 updateStatus(epic.getId());
             }
         }
@@ -182,7 +215,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtasks.remove(id);
         Epic epic = epics.get(subtask.getEpicId());
-        epic.removeIdSubtasks(id);
+        epic.removeSubtask(subtask);
+        epic.minusDuration(subtask.getDuration());
         updateStatus(epic.getId());
         inMemoryHistoryManager.remove(id);
 
@@ -201,14 +235,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (!subtasks.containsKey(subtask.getId())) {
-            return;
-        }
-        subtasks.remove(subtask.getId());
-        subtasks.put(subtask.getId(), subtask);
 
-        Epic epic = epics.get(subtask.getEpicId());
-        updateStatus(epic.getId());
+        if (checkIntersection(subtask)) {
+            if (!subtasks.containsKey(subtask.getId())) {
+                return;
+            }
+           // subtasks.remove(subtask.getId());
+            subtasks.put(subtask.getId(), subtask);
+            Epic epic = epics.get(subtask.getEpicId());
+            updateStatus(epic.getId());
+        } else System.out.println("Невозможно добавить пересекающиеся по времени задачи");
     }
 
     @Override
@@ -235,7 +271,7 @@ public class InMemoryTaskManager implements TaskManager {
         int NEW = 0;
 
         Epic epic = epics.get(EpicId);
-        ArrayList<Integer> subtaskIds = epic.getSubtaskIds();
+        ArrayList<Integer> subtaskIds = epic.getSubtasksIds();
         if (subtaskIds.isEmpty()) {
             epic.setStatus(Status.NEW);
         } else {
