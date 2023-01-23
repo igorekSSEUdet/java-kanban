@@ -1,4 +1,4 @@
-package tests;
+package tests.managers;
 
 import manager.FileBackedTasksManager;
 import model.Epic;
@@ -6,14 +6,14 @@ import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.time.LocalDateTime;
 
+import static junit.framework.TestCase.assertEquals;
 import static manager.FileBackedTasksManager.loadFromFile;
 
-public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>{
+public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     @BeforeEach
     @Override

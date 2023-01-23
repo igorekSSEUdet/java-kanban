@@ -1,4 +1,4 @@
-package tests;
+package tests.managers;
 
 import historyManager.InMemoryHistoryManager;
 import model.Epic;

@@ -1,21 +1,22 @@
 package tests;
 
 import manager.InMemoryTaskManager;
-import model.Status;
 import model.Epic;
+import model.Status;
 import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 
-class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class EpicTest {
+    InMemoryTaskManager manager;
 
     @BeforeEach
-    @Override
     protected void createManager() {
-        manager = new InMemoryTaskManager();
+         manager = new InMemoryTaskManager();
 
     }
 
@@ -101,7 +102,4 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
         assertEquals(300,epic.getDuration());
 
     }
-
-
-
 }
