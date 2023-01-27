@@ -1,105 +1,116 @@
 package tests;
 
-import manager.InMemoryTaskManager;
+import managers.taskManager.InMemoryTaskManager;
+import managers.taskManager.TaskManager;
 import model.Epic;
-import model.Status;
 import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static model.Status.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class EpicTest {
-    InMemoryTaskManager manager;
+
+    TaskManager manager;
 
     @BeforeEach
     protected void createManager() {
-         manager = new InMemoryTaskManager();
+        manager = new InMemoryTaskManager();
+    }
+
+    @Test
+    void shouldShowNewForEpicWithNewSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        Subtask subtask = new Subtask("name", "desc", NEW, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", NEW, epic.getId());
+        Subtask subtask2 = new Subtask("name", "desc", NEW, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        manager.addSubTask(subtask2);
+        assertEquals(epic.getStatus(), NEW);
+    }
+
+    @Test
+    void shouldShowDoneForEpicWithNewSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        Subtask subtask = new Subtask("name", "desc", DONE, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", DONE, epic.getId());
+        Subtask subtask2 = new Subtask("name", "desc", DONE, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        manager.addSubTask(subtask2);
+        assertEquals(epic.getStatus(), DONE);
+    }
+
+    @Test
+    void shouldShowInProgressForEpicWithNewSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        Subtask subtask = new Subtask("name", "desc", NEW, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", DONE, epic.getId());
+        Subtask subtask2 = new Subtask("name", "desc", NEW, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        manager.addSubTask(subtask2);
+        assertEquals(epic.getStatus(), IN_PROGRESS);
+    }
+
+    @Test
+    void shouldShowNewForEpicWithNoSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        assertEquals(epic.getStatus(), NEW);
+    }
+
+    @Test
+    void shouldReturnNullTimeForEpicWithSubtasksWithNoTime() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        Subtask subtask = new Subtask("name", "desc", NEW, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", DONE, epic.getId());
+        Subtask subtask2 = new Subtask("name", "desc", NEW, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        manager.addSubTask(subtask2);
+        assertNull(epic.getStartTime());
+    }
+
+    @Test
+    void shouldReturnStartAndEndTimeForEpicWithTwoSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
+        manager.addEpic(epic);
+        LocalDateTime time = LocalDateTime.of(2023, 1, 25, 19, 31);
+        LocalDateTime time2 = LocalDateTime.of(2022, 1, 25, 19, 31);
+
+        Subtask subtask = new Subtask("name", "desc", NEW, time, 60L, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", NEW, time2, 60L, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        assertEquals(epic.getStartTime(), time2);
+        assertEquals(epic.getEndTime(), subtask.getEndTime());
 
     }
 
     @Test
-    void checkEpicsStatus() {
-
-        LocalDateTime dateTime = LocalDateTime.of(2023, 1,
-                20, 19, 15);
-
-        Epic epic = new Epic("name4", "desc");
-
-        Subtask subtask1 = new Subtask("nameSub1", "descSub", dateTime, 1000, epic.getId());
-        Subtask subtask2 = new Subtask("nameSub2", "descSub", dateTime, 1000, epic.getId());
-        Subtask subtask3 = new Subtask("nameSub3", "descSub", dateTime, 1000, epic.getId());
-
+    void shouldReturn30MinEpicForTwo15MinSubtasks() {
+        Epic epic = new Epic("nameEpic", "subEpic");
         manager.addEpic(epic);
-        manager.addSubtask(subtask1);
-        manager.addSubtask(subtask2);
-        manager.addSubtask(subtask3);
-        assertEquals(Status.NEW,epic.getStatus());
+        LocalDateTime time = LocalDateTime.of(2023, 1, 25, 19, 31);
+        LocalDateTime time2 = LocalDateTime.of(2022, 1, 25, 19, 31);
 
-        subtask1.setStatus(Status.DONE);
-        subtask2.setStatus(Status.DONE);
-        subtask3.setStatus(Status.DONE);
-        manager.updateSubtask(subtask1);
-        manager.updateSubtask(subtask2);
-        manager.updateSubtask(subtask3);
-        assertEquals(Status.DONE,epic.getStatus());
-        subtask1.setStatus(Status.IN_PROGRESS);
-        subtask2.setStatus(Status.NEW);
-        manager.updateSubtask(subtask1);
-        manager.updateSubtask(subtask2);
-        assertEquals(Status.IN_PROGRESS,epic.getStatus());
+        Subtask subtask = new Subtask("name", "desc", NEW, time, 15L, epic.getId());
+        Subtask subtask1 = new Subtask("name", "desc", NEW, time2, 15L, epic.getId());
+        manager.addSubTask(subtask);
+        manager.addSubTask(subtask1);
+        assertEquals(epic.getDuration(), 30);
+
 
     }
-    @Test
-    void checkListOfSubtasksInEpic() {
-        LocalDateTime dateTime = LocalDateTime.of(2023, 1,
-                20, 19, 15);
 
-        Epic epic = new Epic("name4", "desc");
-
-        Subtask subtask1 = new Subtask("nameSub1", "descSub", dateTime, 1000, epic.getId());
-        Subtask subtask2 = new Subtask("nameSub2", "descSub", dateTime, 1000, epic.getId());
-        Subtask subtask3 = new Subtask("nameSub3", "descSub", dateTime, 1000, epic.getId());
-
-
-        manager.addEpic(epic);
-        manager.addSubtask(subtask1);
-        manager.addSubtask(subtask2);
-        manager.addSubtask(subtask3);
-        assertEquals(3,epic.getSubtasks().size());
-        manager.removeSubtaskById(subtask1.getId());
-        manager.removeSubtaskById(subtask2.getId());
-        assertEquals(1,epic.getSubtasks().size());
-        manager.removeSubtaskById(subtask3.getId());
-        assertEquals(0,epic.getSubtasks().size());
-    }
-
-    @Test
-    void checkTimeInEpic() {
-        LocalDateTime dateTime = LocalDateTime.of(2023, 1,
-                20, 19, 15);
-        LocalDateTime dateTime1 = LocalDateTime.of(2023, 1,
-                20, 20, 15);
-        LocalDateTime dateTime2 = LocalDateTime.of(2023, 1,
-                20, 21, 15);
-
-
-        Epic epic = new Epic("name4", "desc");
-
-        Subtask subtask1 = new Subtask("nameSub1", "descSub", dateTime, 100, epic.getId());
-        Subtask subtask2 = new Subtask("nameSub2", "descSub", dateTime1, 100, epic.getId());
-        Subtask subtask3 = new Subtask("nameSub3", "descSub", dateTime2, 100, epic.getId());
-
-        manager.addEpic(epic);
-        manager.addSubtask(subtask1);
-        manager.addSubtask(subtask2);
-        manager.addSubtask(subtask3);
-
-        assertEquals(epic.getStartTime(),subtask1.getStartTime());
-        assertEquals(epic.getEndTime(),subtask3.getEndTime());
-        assertEquals(300,epic.getDuration());
-
-    }
 }

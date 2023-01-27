@@ -1,8 +1,0 @@
-id,type,name,status,description,epic
-4,TASK,nameSub1,NEW,descSub,2021-01-20T21:15,1000
-0,EPIC,name4,NEW,desc,2023-01-20T19:15,2023-01-21T13:55,3000
-1,SUBTASK,nameSub1,NEW,descSub,0,2023-01-20T19:15,1000
-2,SUBTASK,nameSub2,NEW,descSub,0,2023-01-20T20:15,1000
-3,SUBTASK,nameSub3,NEW,descSub,0,2023-01-20T21:15,1000
-
-0,4,1,2,3

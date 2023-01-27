@@ -5,22 +5,36 @@ import java.util.Objects;
 
 public class Subtask extends Task {
 
-    private int epicId;
+   private Integer epicId;
 
 
-    public Subtask(int id, String taskType, String name, String status,
-                   String description, LocalDateTime startTime, int duration, int epicId) {
-        super(id, taskType, name, status, description, startTime, duration);//для считывания
+    public Subtask(String name, String description, Status status, LocalDateTime startTime, Long duration, Integer epicId) {
+        super(name, description, status, startTime, duration);
         this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, LocalDateTime startTime, int duration, int epicId) {
-        super(name, description, startTime, duration);//для создания
+    public Subtask(String name, String description, Status status, Integer epicId) {
+        super(name, description, status);
         this.epicId = epicId;
     }
 
-    public int getEpicId() {
+    public Subtask(int id, TaskType type, String name, Status status, String description, Integer epicId) {
+        super(id, type, name, status, description);
+        this.epicId = epicId;
+    }
+
+    public Subtask(int id, TaskType type, String name, Status status, String description,
+                   LocalDateTime startTime, Long duration, Integer epicId) {
+        super(id, type, name, status, description, startTime, duration);
+        this.epicId = epicId;
+    }
+
+    public Integer getEpicId() {
         return epicId;
+    }
+
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -29,7 +43,7 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return epicId == subtask.epicId;
+        return Objects.equals(epicId, subtask.epicId);
     }
 
     @Override
@@ -43,9 +57,11 @@ public class Subtask extends Task {
                 "epicId=" + epicId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + status +
+                ", taskType='" + taskType + '\'' +
+                ", status='" + status + '\'' +
                 ", id=" + id +
-                ", taskType=" + taskType +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
 }
