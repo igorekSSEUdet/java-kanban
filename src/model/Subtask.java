@@ -2,17 +2,21 @@ package model;
 
 import manager.Status;
 
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private int epicId;
 
-    public Subtask(String name, String description, int epicId) {
-        super(name, description);
+
+    public Subtask(int id, String taskType, String name, String status,
+                   String description, LocalDateTime startTime, LocalDateTime endTime, int duration, int epicId) {
+        super(id, taskType, name, status, description, startTime, endTime, duration);//дял считывания
         this.epicId = epicId;
     }
 
-    public Subtask(int id, String taskType, String name, String status, String description, int epicId) {
-        super(id,taskType,name,status,description);
+    public Subtask(String name, String description, LocalDateTime startTime, int duration, int epicId) {
+        super(name, description, startTime, duration);//для создания
         this.epicId = epicId;
     }
 
