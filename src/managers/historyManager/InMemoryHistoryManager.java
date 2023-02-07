@@ -1,15 +1,18 @@
-package historyManager;
+package managers.historyManager;
+
 
 import model.Task;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Node first;
     private Node last;
 
-     Map<Integer, Node> nodeMap = new HashMap<>();
+    Map<Integer, Node> nodeMap = new HashMap<>();
 
 
     private List<Task> getTasks() {
@@ -42,8 +45,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (nodeMap.containsKey(id)) {
             removeNode(id);
             nodeMap.remove(id);
-
         }
+
     }
 
 
