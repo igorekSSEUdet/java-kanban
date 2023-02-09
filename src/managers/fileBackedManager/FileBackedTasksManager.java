@@ -1,88 +1,33 @@
 package managers.fileBackedManager;
 
 
-import com.google.gson.Gson;
 import exceptions.ManagerSaveException;
 import managers.historyManager.HistoryManager;
 import managers.historyManager.InMemoryHistoryManager;
-import managers.taskManager.InMemoryTaskManager;
+import managers.inMemoryManager.InMemoryTaskManager;
 import model.*;
-
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static model.Status.NEW;
 import static model.TaskType.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    public static void main(String[] args) {
-        Gson gson = new Gson();
-        FileBackedTasksManager tasksManager = new FileBackedTasksManager();
-        Task task1 = new Task("name", "desc", NEW);
-        tasksManager.addTask(task1);
-        LocalDateTime time = LocalDateTime.of(2023, 1, 25, 19, 31);
-        LocalDateTime time2 = LocalDateTime.of(2022, 1, 25, 19, 31);
-        LocalDateTime time3 = LocalDateTime.of(2021, 1, 25, 19, 31);
-        Task task = new Task("name", "desc", NEW, time, 60L);
-        Task task2 = new Task("name", "desc", NEW, time2, 60L);
-        Task task3 = new Task("name", "desc", NEW, time3, 60L);
-        tasksManager.addTask(task);
-        Task task6 = new Task("name", "desc", NEW);
-        tasksManager.addTask(task6);
-        tasksManager.addTask(task2);
-        tasksManager.addTask(task3);
-
-        Epic epic = new Epic("nameEpic", "subEpic");
-        tasksManager.addEpic(epic);
-
-        Subtask subtask = new Subtask("name", "desc", NEW, time, 60L, epic.getId());
-        Subtask subtask1 = new Subtask("name", "desc", NEW, time2, 60L, epic.getId());
-        Subtask subtask2 = new Subtask("name", "desc", NEW, time3, 60L, epic.getId());
-        tasksManager.addSubTask(subtask);
-        tasksManager.addSubTask(subtask1);
-        tasksManager.addSubTask(subtask2);
-        System.out.println();
-
-        tasksManager.getTaskById(task.getId());
-        tasksManager.getEpicById(epic.getId());
-        tasksManager.getSubTaskById(subtask1.getId());
-        File file = new File("src/fileSources/SaveData.csv");
-        FileBackedTasksManager tasksManager2 = loadFromFile(file);
-        System.out.println(tasksManager.getPrioritizedTasks());
-        System.out.println(tasksManager.getPrioritizedTasks().equals(tasksManager2.getPrioritizedTasks()));
-        System.out.println(tasksManager2.getPrioritizedTasks());
-        System.out.println("dcmksdkm");
-        System.out.println(gson.toJson(task));
-
-    }
-
     File file;
 
     public FileBackedTasksManager() {
-
         this.file = (new File("src/fileSources/SaveData.csv"));
-
     }
-
-
-
 
     @Override
     public void addTask(Task task) {
         super.addTask(task);
         save();
     }
-
-    @Override
-    public Set<Task> getPrioritizedTasks() {
-        return super.getPrioritizedTasks();
-    }
-
 
     @Override
     public void addSubTask(Subtask subtask) {
@@ -171,19 +116,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
-
     @Override
     public void removeAllEpics() {
         super.removeAllEpics();
         save();
     }
 
-
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }
-
 
     String taskToString(Task task) {
 
@@ -227,7 +169,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         return String.join(",", taskId);
     }
-
 
     public void save() {
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -304,9 +245,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     static List<Integer> historyFromString(String value) {
         String[] taskId = value.split(",");
         List<Integer> idTask = new ArrayList<>();
-        for (String s : taskId) {
-            idTask.add(Integer.parseInt(s));
-        }
+        Arrays.stream(taskId).forEach(id -> idTask.add(Integer.parseInt(id)));
         return idTask;
     }
 

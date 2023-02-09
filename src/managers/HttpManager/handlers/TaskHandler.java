@@ -4,19 +4,18 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.TaskManagerException;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-public class TaskHandler implements HttpHandler {
+public class TaskHandler extends UtilHandler implements HttpHandler {
 
-    private final TaskManager manager;
-    private final Gson gson;
+    protected TaskManager manager;
+    protected Gson gson;
 
     public TaskHandler(TaskManager manager,Gson gson) {
         this.manager = manager;
@@ -126,22 +125,7 @@ public class TaskHandler implements HttpHandler {
 
     }
 
-    private void writeResponse(HttpExchange exchange, String response, int responseCode) throws IOException {
-
-        if (response.isBlank()) {
-            exchange.sendResponseHeaders(responseCode, 0);
-        } else {
-            byte[] dataBytes = response.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(responseCode, dataBytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(dataBytes);
-            }
-        }
-        exchange.close();
-    }
-
-    private Optional<Integer> getId(HttpExchange exchange) {
-        int x = exchange.getRequestURI().getPath().split("/").length;
+    protected Optional<Integer> getId(HttpExchange exchange) {
         if (exchange.getRequestURI().getQuery() == null) {
             return Optional.of(-1);
         }

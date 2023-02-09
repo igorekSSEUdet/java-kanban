@@ -7,7 +7,6 @@ import managers.fileBackedManager.FileBackedTasksManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-
 import java.io.IOException;
 
 
@@ -36,6 +35,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
         JsonArray tasks = manager.kvClient.load("tasks");
 
+
         if (!(tasks == null)) {
             for (JsonElement task : tasks) {
                 Task task1 = gson.fromJson(task, Task.class);
@@ -60,7 +60,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         if (!(subTasks == null)) {
             for (JsonElement task : subTasks) {
                 Subtask subtask = gson.fromJson(task, Subtask.class);
-                manager.subTasks.put(subtask.getId(),subtask);
+                manager.subTasks.put(subtask.getId(), subtask);
                 manager.sortedTasks.add(subtask);
                 if (subtask.getId() > maxId) maxId = subtask.getId();
 
@@ -69,9 +69,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
         JsonArray historyArr = manager.kvClient.load("history");
         if (!historyArr.isEmpty()) {
-            for (JsonElement history : historyArr) {
-                manager.historyManager.add(gson.fromJson(history, Task.class));
-            }
+            historyArr.forEach(history -> manager.historyManager.add(gson.fromJson(history, Task.class)));
         }
         manager.id = maxId;
         return manager;

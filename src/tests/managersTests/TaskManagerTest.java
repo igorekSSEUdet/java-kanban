@@ -1,7 +1,7 @@
 package tests.managersTests;
 
 import exceptions.TaskManagerException;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static model.Status.NEW;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
     T manager;
@@ -149,7 +149,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final NullPointerException exception = assertThrows(
                 NullPointerException.class,
                 () -> manager.getEpicById(0));
-        assertEquals("Такого эпика нет", exception.getMessage());
+        assertEquals("Нет такого эпика", exception.getMessage());
     }
 
     @Test
@@ -340,7 +340,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final NullPointerException exception = assertThrows(
                 NullPointerException.class,
                 () -> manager.getEpicById(50));
-        assertEquals("Такого эпика нет", exception.getMessage());
+        assertEquals("Нет такого эпика", exception.getMessage());
     }
 
     @Test

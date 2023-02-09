@@ -4,22 +4,16 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.TaskManagerException;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Epic;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
-public class EpicHandler implements HttpHandler {
-    private final TaskManager manager;
-    private final Gson gson;
+public class EpicHandler extends TaskHandler implements HttpHandler {
 
     public EpicHandler(TaskManager manager, Gson gson) {
-        this.manager = manager;
-        this.gson = gson;
+       super(manager, gson);
     }
 
     @Override
@@ -116,35 +110,6 @@ public class EpicHandler implements HttpHandler {
     private void removeAllEpics(HttpExchange exchange) throws IOException {
         manager.removeAllEpics();
         writeResponse(exchange, "Удалены все эпики", 200);
-
-    }
-
-    private void writeResponse(HttpExchange exchange, String response, int responseCode) throws IOException {
-
-        if (response.isBlank()) {
-            exchange.sendResponseHeaders(responseCode, 0);
-        } else {
-            byte[] dataBytes = response.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(responseCode, dataBytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(dataBytes);
-            }
-        }
-        exchange.close();
-    }
-
-    private Optional<Integer> getId(HttpExchange exchange) {
-
-        if (exchange.getRequestURI().getQuery() == null) {
-            return Optional.of(-1);
-        }
-        String[] pathParts = exchange.getRequestURI().getQuery().split("=");
-
-        try {
-            return Optional.of(Integer.parseInt(pathParts[1]));
-        } catch (NumberFormatException ex) {
-            return Optional.empty();
-        }
 
     }
 }

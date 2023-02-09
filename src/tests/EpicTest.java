@@ -1,7 +1,6 @@
-package tests;
 
-import managers.taskManager.InMemoryTaskManager;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.InMemoryTaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Epic;
 import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;

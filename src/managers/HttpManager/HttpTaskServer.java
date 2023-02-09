@@ -4,11 +4,10 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import managers.HttpManager.handlers.*;
 import managers.Managers;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 

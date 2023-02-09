@@ -4,22 +4,17 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.TaskManagerException;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Subtask;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
-public class SubtaskHandler implements HttpHandler {
-    private final TaskManager manager;
-    private final Gson gson;
 
-    public SubtaskHandler(TaskManager manager,Gson gson) {
-        this.manager = manager;
-        this.gson = gson;
+public class SubtaskHandler extends TaskHandler implements HttpHandler {
+
+    public SubtaskHandler(TaskManager manager, Gson gson) {
+        super(manager, gson);
     }
 
     @Override
@@ -125,32 +120,5 @@ public class SubtaskHandler implements HttpHandler {
 
     }
 
-    private void writeResponse(HttpExchange exchange, String response, int responseCode) throws IOException {
 
-        if (response.isBlank()) {
-            exchange.sendResponseHeaders(responseCode, 0);
-        } else {
-            byte[] dataBytes = response.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(responseCode, dataBytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(dataBytes);
-            }
-        }
-        exchange.close();
-    }
-
-    private Optional<Integer> getId(HttpExchange exchange) {
-
-        if (exchange.getRequestURI().getQuery()==null) {
-            return Optional.of(-1);
-        }
-        String[] pathParts = exchange.getRequestURI().getQuery().split("=");
-
-        try {
-            return Optional.of(Integer.parseInt(pathParts[1]));
-        } catch (NumberFormatException ex) {
-            return Optional.empty();
-        }
-
-    }
 }

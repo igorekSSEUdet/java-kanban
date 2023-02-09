@@ -1,6 +1,6 @@
-package tests.httpTaskManagerTests;
+package httpTaskManagerTests;
 
-import com.sun.net.httpserver.HttpServer;
+
 import managers.HttpManager.HttpTaskManager;
 import managers.HttpManager.HttpTaskServer;
 import managers.HttpManager.KVServer;

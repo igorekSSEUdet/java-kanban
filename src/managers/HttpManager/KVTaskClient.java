@@ -1,9 +1,7 @@
 package managers.HttpManager;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

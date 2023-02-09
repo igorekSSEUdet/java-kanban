@@ -3,15 +3,12 @@ package managers.HttpManager.handlers;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import managers.taskManager.TaskManager;
+import managers.inMemoryManager.TaskManager;
 import model.Epic;
-
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-public class EpicSubtaskHandler implements HttpHandler {
+public class EpicSubtaskHandler extends UtilHandler implements HttpHandler {
 
     private final TaskManager manager;
     private final Gson gson;
@@ -75,21 +72,6 @@ public class EpicSubtaskHandler implements HttpHandler {
         }
         writeResponse(exchange, "Нет задачи с таким ID", 400);
     }
-
-    private void writeResponse(HttpExchange exchange, String response, int responseCode) throws IOException {
-
-        if (response.isBlank()) {
-            exchange.sendResponseHeaders(responseCode, 0);
-        } else {
-            byte[] dataBytes = response.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(responseCode, dataBytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(dataBytes);
-            }
-        }
-        exchange.close();
-    }
-
 
     private Optional<Integer> getId(HttpExchange exchange) {
 

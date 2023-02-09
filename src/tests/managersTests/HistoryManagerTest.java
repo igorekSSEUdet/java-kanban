@@ -1,6 +1,5 @@
 package tests.managersTests;
 
-
 import managers.historyManager.HistoryManager;
 import managers.historyManager.InMemoryHistoryManager;
 import model.Task;

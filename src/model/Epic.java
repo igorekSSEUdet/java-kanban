@@ -54,16 +54,9 @@ public class Epic extends Task {
         subtasks.clear();
     }
 
-    public void clearDuration() {
-        this.duration = 0L;
-    }
 
     public List<Subtask> getSubtasks() {
         return subtasks;
-    }
-
-    public void setSubtasks(List<Subtask> subtasks) {
-        this.subtasks = subtasks;
     }
 
     public void addEpicsSubtask(Subtask subtask) {
@@ -73,9 +66,7 @@ public class Epic extends Task {
     public void removeEpicsSubtask(Subtask subtask) {
         subtasks.remove(subtask);
     }
-    public void removeAllSubtasks() {
-        subtasks.clear();
-    }
+
 
     @Override
     public boolean equals(Object o) {

@@ -1,4 +1,4 @@
-package managers.taskManager;
+package managers.inMemoryManager;
 
 import model.Epic;
 import model.Subtask;
@@ -10,11 +10,10 @@ import java.util.Set;
 
 public interface TaskManager {
 
-
-    //tasks
     void addTask(Task task);
 
     void updateTask(Task task);
+
     void removeSubtasksInEpic(int id);
 
     void removeTaskById(int id);
@@ -25,7 +24,6 @@ public interface TaskManager {
 
     void removeAllTasks();
 
-    //subtasks
     void addSubTask(Subtask subtask);
 
     void updateSubTask(Subtask task);
@@ -38,8 +36,8 @@ public interface TaskManager {
 
     void removeAllSubTasks();
 
-    //epics
     void addEpic(Epic subtask);
+
     void updateEpic(Epic epic);
 
     void removeEpicById(int id);
@@ -52,14 +50,14 @@ public interface TaskManager {
 
     List<Subtask> getSubtasksByEpic(int id);
 
-    //history
-
     List<Task> getHistory();
 
-
     Set<Task> getPrioritizedTasks();
-    public Map<Integer,Task> getTaskMap();
-    public Map<Integer,Subtask>getSubTasksMap();
-    public Map<Integer,Epic>getEpicsMap();
+
+    Map<Integer, Task> getTaskMap();
+
+    Map<Integer, Subtask> getSubTasksMap();
+
+    Map<Integer, Epic> getEpicsMap();
 
 }

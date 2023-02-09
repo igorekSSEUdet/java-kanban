@@ -1,4 +1,4 @@
-package managers.taskManager;
+package managers.inMemoryManager;
 
 import exceptions.TaskManagerException;
 import managers.Managers;
@@ -59,7 +59,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void removeTasksInSorted() {
-        sortedTasks.removeIf(taskTime -> taskTime.getTaskType() == TASK);
+        sortedTasks.removeIf(t -> t.getTaskType() == TASK);
     }
 
     protected void removeSubTasksInSorted() {
@@ -161,7 +161,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (checkIfIntersection(subtask)) {
             try {
                 if (!subTasks.containsKey(subtask.getId())) throw new NullPointerException("Такой подзадачи нет");
-                ;
                 Epic epic = epics.get(subtask.getEpicId());
                 epic.removeEpicsSubtask(subTasks.get(subtask.getId()));
                 sortedTasks.remove(subTasks.get(subtask.getId()));
@@ -220,7 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(NEW);
             epics.put(epic.getId(), epic);
         } catch (TaskManagerException ex) {
-            throw new TaskManagerException("Ошибка добавления подзадачи");
+            throw new TaskManagerException("Ошибка добавления эпика");
         }
 
     }
@@ -252,7 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicById(int id) {
-        if (!epics.containsKey(id)) throw new NullPointerException("Такого эпика нет");
+        if (!epics.containsKey(id)) throw new NullPointerException("Нет такого эпика");
         historyManager.add(epics.get(id));
         return epics.get(id);
     }
@@ -271,8 +270,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubtasksByEpic(int id) {
         if (!epics.containsKey(id)) throw new TaskManagerException("Нет такого эпика");
-        Epic epic = epics.get(id);
-        return epic.getSubtasks();
+        return epics.get(id).getSubtasks();
     }
 
 
@@ -325,27 +323,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void removeAllSubtasksInEpic() {
         if (epics.isEmpty()) return;
-        for (Epic epic : epics.values()) {
+        epics.values().forEach(epic -> {
             epic.clearSubtasksList();
             updateStatus(epic);
-        }
+        });
     }
 
     protected void removeSubtaskBecauseEpic(int id) {
         Epic epic = epics.get(id);
         if (epic.getSubtasks().isEmpty()) return;
-        for (Subtask subtask : epic.getSubtasks()) {
-            subTasks.remove(subtask.getId());
-        }
+        epic.getSubtasks().forEach(subtask -> subTasks.remove(subtask.getId()));
     }
 
     @Override
     public void removeSubtasksInEpic(int id) {
         Epic epic = epics.get(id);
         if (epic.getSubtasks().isEmpty()) return;
-        for (Subtask subtask : epic.getSubtasks()) {
-            subTasks.remove(subtask.getId());
-        }
+        epic.getSubtasks().forEach(subtask -> subTasks.remove(subtask.getId()));
         epic.clearSubtasksList();
     }
 
