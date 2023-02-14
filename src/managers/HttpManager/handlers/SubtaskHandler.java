@@ -6,9 +6,12 @@ import com.sun.net.httpserver.HttpHandler;
 import exceptions.TaskManagerException;
 import managers.inMemoryManager.TaskManager;
 import model.Subtask;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import static managers.HttpManager.ResponseCodes.*;
 
 
 public class SubtaskHandler extends TaskHandler implements HttpHandler {
@@ -40,15 +43,15 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
     private void getSubtaskById(HttpExchange exchange) throws IOException {
 
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор поста", 400);
+            writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
             if (manager.getSubTasksMap().isEmpty()) {
-                writeResponse(exchange, "Подзадач пока нет", 200);
+                writeResponse(exchange, "Подзадач пока нет", NO_CONTENT.getCode());
             } else {
                 getAllSubtask(exchange);
-                writeResponse(exchange, "Все подзадачи", 200);
+                writeResponse(exchange, "Все подзадачи", OK.getCode());
             }
             return;
 
@@ -61,7 +64,7 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
             String response = gson.toJson(subtask);
             writeResponse(exchange, response, 200);
         } catch (NullPointerException | TaskManagerException ex) {
-            writeResponse(exchange, "Нет подзадачи с таким ID", 400);
+            writeResponse(exchange, "Нет подзадачи с таким ID", NOT_FOUND.getCode());
         }
 
 
@@ -69,7 +72,7 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
 
     private void getAllSubtask(HttpExchange exchange) throws IOException {
         String allSubtasks = gson.toJson(manager.getAllSubTasks());
-        writeResponse(exchange, allSubtasks, 200);
+        writeResponse(exchange, allSubtasks, OK.getCode());
 
     }
 
@@ -77,26 +80,26 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
         InputStream stream = exchange.getRequestBody();
         String subtaskJson = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         Subtask subtask = gson.fromJson(subtaskJson, Subtask.class);
-        if (subtask.getEpicId() == null || (!manager.getEpicsMap().containsKey(subtask.getEpicId()))  ) {
-            writeResponse(exchange, "Подзадача не может существовать без эпика", 200);
+        if (subtask.getEpicId() == null || (!manager.getEpicsMap().containsKey(subtask.getEpicId()))) {
+            writeResponse(exchange, "Подзадача не может существовать без эпика", NO_CONTENT.getCode());
         }
         if (subtask != null) {
 
             if (manager.getSubTasksMap().containsKey(subtask.getId())) {
                 manager.updateSubTask(subtask);
-                writeResponse(exchange, "Подзадача обновлена", 200);
+                writeResponse(exchange, "Подзадача обновлена", CREATED.getCode());
             } else {
                 manager.addSubTask(subtask);
-                writeResponse(exchange, "Подзадача добавлена", 200);
+                writeResponse(exchange, "Подзадача добавлена", CREATED.getCode());
             }
         }
-        writeResponse(exchange, "Некорректный идентификатор поста", 400);
+        writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
 
     }
 
     private void removeSubtaskById(HttpExchange exchange) throws IOException {
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор эпика", 400);
+            writeResponse(exchange, "Некорректный идентификатор эпика", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
@@ -106,9 +109,9 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
         int subtaskId = getId(exchange).get();
         try {
             manager.removeSubTaskById(subtaskId);
-            writeResponse(exchange, "подзадача удалена", 200);
+            writeResponse(exchange, "подзадача удалена", OK.getCode());
         } catch (NullPointerException | TaskManagerException ex) {
-            writeResponse(exchange, "Нет задачи с таким ID", 400);
+            writeResponse(exchange, "Нет задачи с таким ID", NOT_FOUND.getCode());
         }
 
 
@@ -116,7 +119,7 @@ public class SubtaskHandler extends TaskHandler implements HttpHandler {
 
     private void removeAllSubtask(HttpExchange exchange) throws IOException {
         manager.removeAllSubTasks();
-        writeResponse(exchange, "Все подзадачи удалены", 400);
+        writeResponse(exchange, "Все подзадачи удалены", OK.getCode());
 
     }
 

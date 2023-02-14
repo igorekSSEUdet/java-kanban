@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+
 public class Task {
 
     protected String name;
@@ -117,7 +118,10 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description) && taskType == task.taskType && status == task.status && Objects.equals(id, task.id) && Objects.equals(startTime, task.startTime) && Objects.equals(duration, task.duration);
+        return Objects.equals(name, task.name) && Objects.equals(description, task.description) &&
+                taskType == task.taskType && status == task.status &&
+                Objects.equals(id, task.id) && Objects.equals(startTime, task.startTime) &&
+                Objects.equals(duration, task.duration);
     }
 
     @Override

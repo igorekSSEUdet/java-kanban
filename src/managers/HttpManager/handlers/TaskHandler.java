@@ -12,12 +12,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import static managers.HttpManager.ResponseCodes.*;
+
 public class TaskHandler extends UtilHandler implements HttpHandler {
 
     protected TaskManager manager;
     protected Gson gson;
 
-    public TaskHandler(TaskManager manager,Gson gson) {
+    public TaskHandler(TaskManager manager, Gson gson) {
         this.manager = manager;
         this.gson = gson;
     }
@@ -47,7 +49,7 @@ public class TaskHandler extends UtilHandler implements HttpHandler {
     private void removeTask(HttpExchange exchange) throws IOException {
 
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор задачи", 400);
+            writeResponse(exchange, "Некорректный идентификатор задачи", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
@@ -57,11 +59,11 @@ public class TaskHandler extends UtilHandler implements HttpHandler {
         int taskId = getId(exchange).get();
 
 
-        try{
+        try {
             manager.removeTaskById(taskId);
-            writeResponse(exchange, "Задача удалена", 200);
+            writeResponse(exchange, "Задача удалена", OK.getCode());
         } catch (NullPointerException | TaskManagerException ex) {
-            writeResponse(exchange, "Нет задачи с таким ID", 400);
+            writeResponse(exchange, "Нет задачи с таким ID", NOT_FOUND.getCode());
         }
     }
 
@@ -73,33 +75,33 @@ public class TaskHandler extends UtilHandler implements HttpHandler {
         if (task != null) {
             if (manager.getTaskMap().containsKey(task.getId())) {
                 manager.updateTask(task);
-                writeResponse(exchange, "Задача обновлена", 200);
+                writeResponse(exchange, "Задача обновлена", CREATED.getCode());
             } else {
                 manager.addTask(task);
-                writeResponse(exchange, "Задача добавлена", 200);
+                writeResponse(exchange, "Задача добавлена", CREATED.getCode());
                 return;
             }
         }
-        writeResponse(exchange, "Ошибка добавления задачи", 400);
+        writeResponse(exchange, "Ошибка добавления задачи", BAD_REQUEST.getCode());
 
     }
 
     private void getAllTasks(HttpExchange exchange) throws IOException {
 
         String allTasksBytes = gson.toJson(manager.getAllTasks());
-        writeResponse(exchange, allTasksBytes, 200);
+        writeResponse(exchange, allTasksBytes, OK.getCode());
 
     }
 
     private void getTask(HttpExchange exchange) throws IOException {
 
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор поста", 400);
+            writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
             if (manager.getTaskMap().isEmpty()) {
-                writeResponse(exchange, "Задач пока нет", 400);
+                writeResponse(exchange, "Задач пока нет", NO_CONTENT.getCode());
             } else {
                 getAllTasks(exchange);
                 return;
@@ -112,15 +114,14 @@ public class TaskHandler extends UtilHandler implements HttpHandler {
             String response = gson.toJson(task);
             writeResponse(exchange, response, 200);
         } catch (NullPointerException ex) {
-            writeResponse(exchange, "нет задачи с таким ID", 200);
+            writeResponse(exchange, "нет задачи с таким ID", NOT_FOUND.getCode());
         }
     }
 
 
     private void removeAllTasks(HttpExchange exchange) throws IOException {
         manager.removeAllTasks();
-        writeResponse(exchange, "Все задачи удалены", 200);
-
+        writeResponse(exchange, "Все задачи удалены", OK.getCode());
 
 
     }

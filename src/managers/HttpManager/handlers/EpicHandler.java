@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import static managers.HttpManager.ResponseCodes.*;
+
+
 public class EpicHandler extends TaskHandler implements HttpHandler {
 
     public EpicHandler(TaskManager manager, Gson gson) {
@@ -39,7 +42,7 @@ public class EpicHandler extends TaskHandler implements HttpHandler {
     private void getEpic(HttpExchange exchange) throws IOException {
 
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор поста", 400);
+            writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
@@ -51,15 +54,15 @@ public class EpicHandler extends TaskHandler implements HttpHandler {
         try {
             Epic epic = manager.getEpicById(epicId);
             String response = gson.toJson(epic);
-            writeResponse(exchange, response, 400);
+            writeResponse(exchange, response, OK.getCode());
         } catch (NullPointerException | TaskManagerException ex) {
-            writeResponse(exchange, "Нет эпика с таким ID", 400);
+            writeResponse(exchange, "Нет эпика с таким ID", NOT_FOUND.getCode());
         }
     }
 
     private void getAllEpics(HttpExchange exchange) throws IOException {
         String bytes = gson.toJson(manager.getAllEpics());
-        writeResponse(exchange, bytes, 200);
+        writeResponse(exchange, bytes, OK.getCode());
 
     }
 
@@ -71,24 +74,24 @@ public class EpicHandler extends TaskHandler implements HttpHandler {
         if (epic != null) {
             if (manager.getEpicsMap().containsKey(epic.getId())) {
                 manager.updateEpic(epic);
-                writeResponse(exchange, "Эпик обновлен", 200);
+                writeResponse(exchange, "Эпик обновлен", CREATED.getCode());
             } else {
                 manager.addEpic(epic);
-                writeResponse(exchange, "Эпик добавлен", 200);
+                writeResponse(exchange, "Эпик добавлен", CREATED.getCode());
             }
         }
-        writeResponse(exchange, "Некорректный идентификатор поста", 400);
+        writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
     }
 
     private void removeEpic(HttpExchange exchange) throws IOException {
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор эпика", 400);
+            writeResponse(exchange, "Некорректный идентификатор эпика", BAD_REQUEST.getCode());
             return;
         }
         if (getId(exchange).get() == -1) {
 
             if (manager.getEpicsMap().isEmpty()) {
-                writeResponse(exchange, "Эпиков пока нет", 400);
+                writeResponse(exchange, "Эпиков пока нет", NO_CONTENT.getCode() );
             } else {
                 removeAllEpics(exchange);
                 return;
@@ -98,18 +101,18 @@ public class EpicHandler extends TaskHandler implements HttpHandler {
         try {
             if (manager.getEpicsMap().containsKey(epicId)) {
                 manager.removeEpicById(epicId);
-                writeResponse(exchange, "Эпик удален", 200);
+                writeResponse(exchange, "Эпик удален", OK.getCode());
             } else {
-                writeResponse(exchange, "Такого эпика нет", 400);
+                writeResponse(exchange, "Такого эпика нет",  NO_CONTENT.getCode());
             }
         } catch (NullPointerException | TaskManagerException ex) {
-            writeResponse(exchange, "Нет эпика с таким ID", 400);
+            writeResponse(exchange, "Нет эпика с таким ID", NOT_FOUND.getCode());
         }
     }
 
     private void removeAllEpics(HttpExchange exchange) throws IOException {
         manager.removeAllEpics();
-        writeResponse(exchange, "Удалены все эпики", 200);
+        writeResponse(exchange, "Удалены все эпики", OK.getCode());
 
     }
 }

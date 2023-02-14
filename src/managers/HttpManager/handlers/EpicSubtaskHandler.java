@@ -5,15 +5,18 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import managers.inMemoryManager.TaskManager;
 import model.Epic;
+
 import java.io.IOException;
 import java.util.Optional;
+
+import static managers.HttpManager.ResponseCodes.*;
 
 public class EpicSubtaskHandler extends UtilHandler implements HttpHandler {
 
     private final TaskManager manager;
     private final Gson gson;
 
-    public EpicSubtaskHandler(TaskManager manager,Gson gson ) {
+    public EpicSubtaskHandler(TaskManager manager, Gson gson) {
         this.manager = manager;
         this.gson = gson;
     }
@@ -33,7 +36,6 @@ public class EpicSubtaskHandler extends UtilHandler implements HttpHandler {
             case "DELETE":
                 removeAllSubtasksInEpic(exchange);
                 break;
-
         }
 
     }
@@ -41,7 +43,7 @@ public class EpicSubtaskHandler extends UtilHandler implements HttpHandler {
 
     private void getEpicsSubtasks(HttpExchange exchange) throws IOException {
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор поста", 400);
+            writeResponse(exchange, "Некорректный идентификатор поста", BAD_REQUEST.getCode());
             return;
         }
         int epicId = getId(exchange).get();
@@ -49,28 +51,28 @@ public class EpicSubtaskHandler extends UtilHandler implements HttpHandler {
         for (Epic epic : manager.getAllEpics()) {
             if (epic.getId() == epicId) {
                 String response = gson.toJson(epic.getSubtasks());
-                writeResponse(exchange, response, 200);
+                writeResponse(exchange, response, OK.getCode());
                 return;
             }
         }
-        writeResponse(exchange, "Нет эпика с таким ID", 400);
+        writeResponse(exchange, "Нет эпика с таким ID", NOT_FOUND.getCode());
 
     }
 
     private void removeAllSubtasksInEpic(HttpExchange exchange) throws IOException {
         if (getId(exchange).isEmpty()) {
-            writeResponse(exchange, "Некорректный идентификатор эпика", 400);
+            writeResponse(exchange, "Некорректный идентификатор эпика", BAD_REQUEST.getCode());
             return;
         }
         int epicId = getId(exchange).get();
         for (Epic epic : manager.getAllEpics()) {
             if (epic.getId() == epicId) {
                 manager.removeSubtasksInEpic(epicId);
-                writeResponse(exchange, "удалены все подзадачи эпика с ID = " + epic.getId(), 200);
+                writeResponse(exchange, "удалены все подзадачи эпика с ID = " + epic.getId(), OK.getCode());
                 return;
             }
         }
-        writeResponse(exchange, "Нет задачи с таким ID", 400);
+        writeResponse(exchange, "Нет задачи с таким ID",  NOT_FOUND.getCode());
     }
 
     private Optional<Integer> getId(HttpExchange exchange) {
